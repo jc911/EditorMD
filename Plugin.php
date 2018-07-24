@@ -5,8 +5,8 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * 
  * @package EditorMD
  * @author DT27
- * @version 1.3.0
- * @link https://dt27.org
+ * @version 1.4.0
+ * @link https://dt27.org/php/editormd-for-typecho/
  */
 class EditorMD_Plugin implements Typecho_Plugin_Interface
 {
@@ -368,7 +368,24 @@ $(function() {
         },
     });
     emojify.run();
-<?php } ?>
+<?php }
+if(isset(Typecho_Widget::widget('Widget_Options')->plugins['activated']['APlayer'])){
+    ?>
+    var len = aPlayerOptions.length;
+    for(var ii=0;ii<len;ii++){
+        aPlayers[ii] = new APlayer({
+            element: document.getElementById('player' + aPlayerOptions[ii]['id']),
+            narrow: false,
+            autoplay: aPlayerOptions[ii]['autoplay'],
+            showlrc: aPlayerOptions[ii]['showlrc'],
+            music: aPlayerOptions[ii]['music'],
+            theme: aPlayerOptions[ii]['theme']
+        });
+        aPlayers[ii].init();
+    }
+    <?php
+}
+?>
 });
 </script>
 <?php
