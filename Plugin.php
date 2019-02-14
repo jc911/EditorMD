@@ -111,6 +111,10 @@ class EditorMD_Plugin implements Typecho_Plugin_Interface
         $options = Helper::options();
         $cssUrl = $options->pluginUrl.'/EditorMD/css/editormd.min.css';
         $jsUrl = $options->pluginUrl.'/EditorMD/js/editormd.min.js';
+        #绝对路径转相对路径 by JC
+        $cssUrl = parse_url($cssUrl, PHP_URL_PATH);
+        $jsUrl = parse_url($jsUrl, PHP_URL_PATH);
+
         $editormd = Typecho_Widget::widget('Widget_Options')->plugin('EditorMD');
         ?>
         <link rel="stylesheet" href="<?php echo $cssUrl; ?>" />
@@ -143,7 +147,7 @@ class EditorMD_Plugin implements Typecho_Plugin_Interface
                     postEditormd = editormd("text-editormd", {
                         width: "100%",
                         height: 640,
-                        path: '<?php echo $options->pluginUrl ?>/EditorMD/lib/',
+                        path: '<?php echo parse_url($options->pluginUrl, PHP_URL_PATH);#by JC ?>/EditorMD/lib/',
                         toolbarAutoFixed: false,
                         htmlDecode: true,
                         emoji: <?php echo $editormd->emoji ? 'true' : 'false'; ?>,
@@ -221,6 +225,11 @@ class EditorMD_Plugin implements Typecho_Plugin_Interface
 
                     // 优化图片及文件附件插入 Thanks to Markxuxiao
                     Typecho.insertFileToEditor = function (file, url, isImage) {
+                        //转换绝对路径为相对路径 by JC
+                        arrUrl = url.split("//");
+                        start = arrUrl[1].indexOf("/");
+                        url = arrUrl[1].substring(start);
+                        
                         html = isImage ? '![' + file + '](' + url + ')'
                             : '[' + file + '](' + url + ')';
                         postEditormd.insertValue(html);
@@ -288,6 +297,11 @@ class EditorMD_Plugin implements Typecho_Plugin_Interface
                                         processData: false,
                                         success: function(data) {
                                             if (data[0]) {
+                                                //转换绝对路径为相对路径 by JC
+                                                arrUrl = data[0].split("//");
+                                                start = arrUrl[1].indexOf("/");
+                                                data[0] = arrUrl[1].substring(start);
+
                                                 postEditormd.setValue(postEditormd.getValue().replace(uploadingText, '![](' + data[0] + ')'));
                                             } else {
                                                 postEditormd.setValue(postEditormd.getValue().replace(uploadingText, uploadFailText));
@@ -315,6 +329,9 @@ class EditorMD_Plugin implements Typecho_Plugin_Interface
     {
         $options = Helper::options();
         $pluginUrl = $options->pluginUrl.'/EditorMD';
+        #转相对路径 by JC
+        $pluginUrl = parse_url($pluginUrl, PHP_URL_PATH);
+        
         $editormd = Typecho_Widget::widget('Widget_Options')->plugin('EditorMD');
         if($editormd->emoji){
 ?>
